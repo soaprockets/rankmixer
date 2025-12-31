@@ -69,9 +69,9 @@ class RankMixerLayer(Layer):
         return x
 
 class RankMixer(Layer):
-    def __init__(self,num_layers,num_T,num_D,num_H,expansion_ratio,token_dim,feature_groups,**kwargs):
+    def __init__(self,num_layers,num_T,num_D,num_H,expansion_ratio,feature_groups,**kwargs):
         super().__init__(**kwargs)
-        self.semantic_tokenization = SemanticTokenization(token_dim,feature_groups)
+        self.semantic_tokenization = SemanticTokenization(num_D,feature_groups)
         self.layers_list = []
         for _ in range(num_layers):
             self.layers_list.append(RankMixerLayer(num_T,num_D,num_H,expansion_ratio))
@@ -87,5 +87,9 @@ if __name__ == '__main__':
         tf.keras.Input(shape=(16,), name='feature_2'),
         tf.keras.Input(shape=(32,), name='feature_3'),
         tf.keras.Input(shape=(32,), name='feature_4')]
-    model = RankMixer(num_layers=2,num_T=4,num_D=128,num_H=4,expansion_ratio=4,token_dim=128,feature_groups=4)
-    outputs = model(inputs)
+    rankmixer = RankMixer(num_layers=2,num_T=4,num_D=512,num_H=4,expansion_ratio=4,feature_groups=4) # to
+    outputs = rankmixer(inputs)
+    model = tf.keras.Model(inputs=inputs, outputs=outputs)
+    model.summary()
+    
+    
